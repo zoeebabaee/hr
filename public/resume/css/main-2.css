@@ -1,0 +1,603 @@
+.browserupgrade {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+body {
+    font-family: iranyekan, calibri;
+    font-size: 17px;
+    line-height: 32px;
+    color: #000;
+    background-color: #fff;
+    margin: 0px;
+    direction: rtl;
+}
+
+@font-face {
+    font-family: iranyekan;
+    font-style: normal;
+    font-weight: bold;
+    src: url('../fonts/eot/iranyekanwebbold(fanum).eot');
+    src: url('../fonts/eot/iranyekanwebbold(fanum).eot?#iefix') format('embedded-opentype'),
+    url('../fonts/woff2/iranyekanwebbold(fanum).woff2') format('woff2'),
+    url('../fonts/woff/iranyekanwebbold(fanum).woff') format('woff'),
+    url('../fonts/ttf/iranyekanwebbold(fanum).ttf') format('truetype');
+}
+
+@font-face {
+    font-family: iranyekan;
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/eot/iranyekanweblight(fanum).eot');
+    src: url('../fonts/eot/iranyekanweblight(fanum).eot?#iefix') format('embedded-opentype'),
+    url('../fonts/woff2/iranyekanweblight(fanum).woff2') format('woff2'),
+    url('../fonts/woff/iranyekanweblight(fanum).woff') format('woff'),
+    url('../fonts/ttf/iranyekanweblight(fanum).ttf') format('truetype');
+}
+
+@font-face {
+    font-family: iranyekan;
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/eot/iranyekanwebregular(fanum).eot');
+    src: url('../fonts/eot/iranyekanwebregular(fanum).eot?#iefix') format('embedded-opentype'),
+    url('../fonts/woff2/iranyekanwebregular(fanum).woff2') format('woff2'),
+    url('../fonts/woff/iranyekanwebregular(fanum).woff') format('woff'),
+    url('../fonts/ttf/iranyekanwebregular(fanum).ttf') format('truetype');
+}
+
+/* page 1 */
+.container {
+    width: 1240px;
+    margin: 0px auto;
+    background: url('https://people.golrang.com/resume/img/bg.png') repeat-y right top;
+    position: relative;
+    direction: rtl;
+}
+
+.right-sidebar {
+    width: 404px;
+    float: right;
+    padding-top: 30px;
+    position: relative;
+}
+
+.img-resume {
+    text-align: center;
+}
+
+.img-resume img {
+    width: 220px;
+    height: 220px;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    background: #898989;
+    border: 4px solid #fff;
+    margin: 0px auto;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.right-sidebar h1 {
+    text-align: center;
+    padding: 0px 0px 25px 0px;
+    margin: 0px;
+    font-size: 27px;
+}
+
+.r-section {
+    position: relative;
+    float: right;
+    margin-top: 30px;
+}
+
+.r-title {
+    position: relative;
+}
+
+.r-title strong {
+    text-align: right;
+    font-size: 20px;
+    display: inline-block;
+    direction: rtl;
+    background: #cdcdcd;
+    float: right;
+    padding: 0px 15px;
+    position: relative;
+    z-index: 9;
+}
+
+.line {
+    height: 2px;
+    width: 404px;
+    position: absolute;
+    background: #000;
+    left: 0px;
+    top: 15px;
+}
+
+.r-content {
+    float: right;
+    width: 374px;
+    padding: 15px;
+}
+
+.r-content span {
+    width: 24px;
+    height: 24px;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    border: 2px solid #000;
+    display: inline-block;
+    text-align: center;
+    line-height: 27px;
+    margin-left: 3px
+}
+
+.r-content p {
+    direction: rtl;
+    text-align: right;
+    font-size: 18px;
+}
+
+.rtl {
+    direction: rtl !important;
+}
+
+.ltr {
+    direction: ltr !important;
+}
+
+.line-height-30 {
+    line-height: 30px !important;
+}
+
+.line-height-29 {
+    line-height: 29px !important;
+}
+
+.line-height-28 {
+    line-height: 28px !important;
+}
+
+.line-height-27 {
+    line-height: 27px !important;
+}
+
+.line-height-26 {
+    line-height: 26px !important;
+}
+
+.line-height-25 {
+    line-height: 25px !important;
+}
+
+.line-height-24 {
+    line-height: 24px !important;
+}
+
+.line-height-23 {
+    line-height: 23px !important;
+}
+
+.line-height-22 {
+    line-height: 22px !important;
+}
+
+.line-height-21 {
+    line-height: 21px !important;
+}
+
+.line-height-20 {
+    line-height: 20px !important;
+}
+
+.gig-logo {
+    position: absolute;
+    bottom: 15px;
+    width: 108px;
+    height: 92px;
+    right: 15px;
+}
+
+.wrapper-left-content {
+    width: 806px;
+    float: left;
+}
+
+.left-content {
+    width: 806px;
+    float: left;
+    padding-top: 30px;
+    padding-right: 30px;
+    background-color: #fff
+}
+
+.l-title {
+    direction: rtl;
+    position: relative;
+}
+
+.l-title img {
+    background: #fff
+}
+
+.b-line {
+    height: 2px;
+    width: 718px;
+    position: absolute;
+    top: 40px;
+    right: 59px;
+    border-bottom: 4px dashed #A4181C;
+}
+
+.l-title strong {
+    font-size: 20px;
+    display: inline-block;
+    text-align: right;
+    top: 5px;
+    position: absolute;
+    padding-right: 10px
+}
+
+.l-title h1 {
+    font-size: 20px;
+    display: inline-block;
+    text-align: right;
+    top: -12px;
+    position: absolute;
+    padding-right: 10px;
+}
+
+.l-content {
+    float: right;
+    width: 746px;
+    padding: 15px 30px;
+    text-align: right;
+}
+
+.ul-content {
+    direction: rtl;
+    text-align: right;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    font-size: 17px;
+}
+
+.ul-content p {
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+.circle {
+    width: 14px;
+    height: 14px;
+    background: #a4181c;
+    display: inline-block;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    margin-left: 10px;
+    position: relative;
+    top: 3px;
+    margin-right: -25px;
+}
+
+.ul-content li {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.ul-content li:before {
+    content: '';
+    width: 2px;
+    background-color: #a4181c;
+    display: block;
+    position: absolute;
+    top: 24px;
+    height: 100%;
+    right: 6px;
+}
+
+.ul-content li:last-child:before {
+    height: 0px;
+}
+
+.lvluni {
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 25px;
+}
+
+.rate {
+    padding-left: 25px;
+    font-size: 17px;
+    color: #000;
+}
+
+.year {
+    padding-right: 25px;
+    padding-left: 25px;
+    color: #333;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.city {
+    color: #444;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.university {
+    padding-right: 50px;
+}
+
+.field {
+    font-size: 17px;
+    color: #000;
+}
+
+.thesis {
+    font-size: 17px;
+    color: #000;
+    font-weight: normal !important;
+
+}
+
+.c-txt {
+    padding-right: 25px;
+    font-size: 17px;
+    color: #000;
+    padding-top: 15px !important;
+    line-height: 30px;
+    font-weight: normal !important;
+    text-align: justify;
+}
+
+.i-contact {
+    padding-left: 25px;
+    font-size: 17px;
+    color: #000;
+    padding-right: 25px;
+}
+
+.i-contact img {
+    position: relative;
+    top: 10px;
+}
+.year img {
+    position: relative;
+    top: 10px;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.progress {
+    height: 10px;
+    background-color: #cdcdcd;
+    width: 140px;
+    display: inline-block;
+    position: relative;
+    margin: 0px 0px 0px 0px;
+}
+
+.progress-bar {
+    float: right;
+    width: 0;
+    height: 100%;
+    font-size: 17px;
+    line-height: 20px;
+    color: #000;
+    text-align: center;
+    background-color: #A4181C;
+    -webkit-transition: width .6s ease;
+    -o-transition: width .6s ease;
+    transition: width .6s ease;
+
+}
+
+.progress p {
+    position: absolute;
+    left: -44px;
+    top: -6px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 17px;
+}
+
+.progress span {
+    font-size: 17px;
+    float: right;
+    display: inline-block;
+
+}
+
+.lable-pb {
+    font-size: 14px;
+}
+
+.w-progress {
+    margin-right: 20px;
+    display: inline-block;
+}
+
+.lang {
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+.mr-350 {
+    /*left: 180px;*/
+    /*position: absolute;*/
+}
+
+/* page 2 */
+.container1 {
+    width: 1240px;
+    margin: 0px auto;
+    background: #fff;
+    position: relative;
+    direction: rtl;
+}
+
+.gig-logo1 {
+    position: absolute;
+    top: 30px;
+    width: 108px;
+    height: 92px;
+    left: 30px;
+}
+
+.header {
+    background-color: #cdcdcd;
+    text-align: center;
+    height: 155px;
+}
+
+.header h1 {
+    text-align: center;
+    font-size: 20px;
+    margin: 0px;
+    padding: 30px 0px 0px;
+}
+
+.txt-header {
+    font-size: 20px;
+}
+
+.txt-header span {
+    display: inline-block;
+    padding: 0px 10px;
+}
+
+.wrapper-content {
+    padding: 30px 0px 0px;
+    width: 1240px;
+    float: left;
+    background-color: #fff;
+}
+
+.family {
+
+    color: #000;
+    font-size: 17px;
+    font-weight: normal;
+}
+
+.family strong {
+    font-size: 17px;
+    color: #000;
+
+    font-weight: bold ;
+}
+
+.l-content1 {
+    float: right;
+    width: 1180px;
+    padding: 15px 30px;
+    text-align: right;
+}
+
+.c-txt1 {
+    font-size: 17px;
+    color: #000;
+    display: block;
+    line-height: 35px;
+    text-align: justify;
+    font-weight: normal !important;
+}
+
+.left-circle {
+    display: block;
+    position: relative;
+    top: -25px;
+}
+
+.absolute{
+    position: absolute;
+}
+
+
+
+table, td, th {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    text-align: center;
+    font-size: 20px;
+    background: #f9f9f9
+}
+table td{
+    font-size: 15px;
+    color: #555;
+}
+
+.ul-content-experience{
+    direction: rtl;
+    text-align: right;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    font-size: 20px;
+}
+.ul-content-experience p{
+    margin-bottom: 0px;
+}
+
+.ul-content-experience li{
+    position: relative;
+    padding-bottom: 20px;
+}
+.ul-content-experience li:before{
+    content: '';
+    width: 2px;
+    background-color: #a4181c;
+    display: block;
+    position: absolute;
+    top: 24px;
+    height: 100%;
+    right: 6px;
+}
+.s-line{
+    background: #999;
+    height: 1px;
+    width: 100%;
+    margin:30px 8px;
+}

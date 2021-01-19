@@ -1,0 +1,11 @@
+# Extra Security Headers
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET,POST"
+    Header set Access-Control-Allow-Headers "token"
+    Header set Access-Control-Allow-Credentials "true"
+	Header set X-XSS-Protection "1; mode=block"
+	Header always append X-Frame-Options SAMEORIGIN
+	Header set X-Content-Type-Options nosniff
+	Header set Set-Cookie HttpOnly;Secure
+</IfModule>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3999" height="812" viewBox="0 0 3999 812">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_162" data-name="Rectangle 162" width="3999" height="812" transform="translate(1)" fill="#fff"/>
+    </clipPath>
+    <filter id="Path_427" x="1310" y="-149.131" width="2823.425" height="1004.59" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="43" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <linearGradient id="linear-gradient" y1="0.91" x2="1.168" y2="0.245" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#d4145a"/>
+      <stop offset="1" stop-color="#fbb03b"/>
+    </linearGradient>
+  </defs>
+  <g id="Header_cover" transform="translate(-1)" clip-path="url(#clip-path)">
+    <g id="Group_166" data-name="Group 166">
+      <g transform="matrix(1, 0, 0, 1, 1, 0)" filter="url(#Path_427)">
+        <path id="Path_427-2" data-name="Path 427" d="M405,340S691,96,916,437s592,310.5,858.5,252c79.95-17.55,385.021-158.05,1195.926-206.318V2.6C2691.965-50.443,2212.882,2,1920.1,2L772.2,2.6Z" transform="translate(1034 -2)" fill="#fff" opacity="0.5"/>
+      </g>
+      <g id="left-back" transform="translate(1043.859)">
+        <path id="Path_178" data-name="Path 178" d="M.141,497.18s137.045-97.516,291.608-11.827S390.151,655.368,494,712.983c91.617,45.808,183.5,6.242,197-64,9.574-50.094-2.22-125.943,50-198,55.06-79.705,158.071-98.98,157-177-2-39-23.394-81.748-135.808-79.348-309.272.038-373.419,0-452.922,0H-1044.688V801.161s42.639-212.773,303.846-288.768c207.87-52.39,267.02,30.42,422.5,38.87,115.788,9.141,195.837-2.23,250.723-20.81C-31.488,518.222.141,497.18.141,497.18Z" transform="translate(0 -194.983)" fill="url(#linear-gradient)"/>
+        <path id="Path_189" data-name="Path 189" d="M428.772,462.707s16.429,41.207,67.332,64.1" transform="translate(0 -2)" fill="none" stroke="#e24b4f" stroke-linecap="round" stroke-width="1"/>
+        <path id="Path_190" data-name="Path 190" d="M896.987,120.628s-4.045,9.473-17.653,24.886c-8.936,10.122-25,22.587-35.183,30.034-25.131,18.388-47.932,37.022-47.932,37.022" transform="translate(0 -2)" fill="none" stroke="#f28b42" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

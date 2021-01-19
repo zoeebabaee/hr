@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    window.onscroll = function() {scrollFunction()};
+    function scrollFunction() {
+        if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+            alert("hi");
+            document.getElementById("lala").style.top = "50px";
+            document.getElementById("mehdi").style.top = "50px";
+            document.getElementById("mehdi").style.height = "90vh";
+        } else {
+            document.getElementById("lala").style.top = "85px";
+            document.getElementById("mehdi").style.top = "85px";
+            document.getElementById("mehdi").style.height = "87vh";
+        }
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+  <g id="target" transform="translate(-1522 -1395)">
+    <circle id="Ellipse_94" data-name="Ellipse 94" cx="2" cy="2" r="2" transform="translate(1525 1398)" fill="#fe5049"/>
+    <g id="Ellipse_95" data-name="Ellipse 95" transform="translate(1522 1395)" fill="none" stroke="#fe5049" stroke-width="1">
+      <circle cx="5" cy="5" r="5" stroke="none"/>
+      <circle cx="5" cy="5" r="4.5" fill="none"/>
+    </g>
+  </g>
+</svg>
