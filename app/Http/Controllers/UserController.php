@@ -59,8 +59,8 @@ class UserController extends Controller
         $query_string = (parse_url(URL::full())['query']) ? '?' . parse_url(URL::full())['query'] : null;
 
         #check Age Range
-       
-        
+
+
        if (request('age_range') != '') {
             $age_ranges = request('age_range');
             $users->whereHas('profile', function ($q) {
@@ -80,8 +80,15 @@ class UserController extends Controller
             });
 
         }
-        
-        
+
+
+        $usertype = request('usertype');
+        if (request('usertype') != 0) {
+            if($usertype == -1)
+                $usertype = 0;
+            $users->Join('BI_user_status', 'users.id', '=', 'BI_user_status.user_id')->where('BI_user_status.status', $usertype);
+            $usertype = request('usertype');
+        }
 
 
         # First name contains ...
@@ -127,7 +134,7 @@ class UserController extends Controller
         # industries IS ...
         $industries_selected = request('industries');
         if ($industries_selected != '' && is_array($industries_selected)) {
-            $users->whereIn('id', Resume::whereHas('industries', function ($w) use ($industries_selected) {
+            $users->whereIn('users.id', Resume::whereHas('industries', function ($w) use ($industries_selected) {
                 $w->whereIn('industry_id', $industries_selected);
             })->pluck('user_id')->toArray());
         }
@@ -198,13 +205,13 @@ class UserController extends Controller
             });
         }
 
-        $users = $users->orderBy('id')->paginate(10);
+        $users = $users->orderBy('users.id')->paginate(10);
 
-        $req = array();
+       /* $req = array();
         foreach ((array)request()->request as $item) {
             $req = $item;
             break;
-        }
+        }*/
         $allRoles = Role::all()->pluck('name');
         $cities = $users_ids = DB::select(
             "
@@ -221,9 +228,9 @@ class UserController extends Controller
             'admin.users.index',
             compact(
                 [
-                    'users', 'allRoles', 'req', 'cities',
+                    'users', 'allRoles', 'cities',
                     'ptrs', 'ptrs_selected', 'industries', 'industries_selected',
-                    'degree_selected', 'fields', 'fields_selected', 'query_string', 'provinces','first_date','last_date'
+                    'degree_selected', 'fields', 'fields_selected', 'query_string', 'provinces','first_date','last_date','usertyp'
                 ]
             )
         );

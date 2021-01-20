@@ -449,12 +449,13 @@ class ApplyController extends Controller
             echo 'خطا در تغییر وضعیت';
         }
     }
+
     public function index($id, $status = 1)
     {
-        
+
         $apply = Job::find($id);
         $company_flag = $apply->company->flag;
-        if($status == 1 || $status == 3|| $status == 9 || $status == 10 )
+        if($status == 1 || $status == 3)
         {
             $delete_button = 0;
         }
@@ -469,8 +470,6 @@ class ApplyController extends Controller
         $seen_applies = Job::findOrFail($id)->applies()->where('status', 4)->count();
         $rejected_applies = Job::findOrFail($id)->applies()->where('status', 3)->count();
         $accepted_applies = Job::findOrFail($id)->applies()->where('status', 2)->count();
-        $first_priority_applies = Job::findOrFail($id)->applies()->where('status', 9)->count();
-        $second_priority_applies = Job::findOrFail($id)->applies()->where('status', 10)->count();
 
         $reject_reasons = RejectReasons::all();
 
@@ -589,32 +588,43 @@ class ApplyController extends Controller
                 });
             });
         }
-        
-        
-        
+
+        if (request('usertype') != 0) {
+            $usertype = request('usertype');
+            if($usertype == -1)
+                $usertype=0;
+                $applies->whereHas('user', function ($q) use ($usertype)  {
+                $q->Join('BI_user_status', 'users.id', '=', 'BI_user_status.user_id')->where('BI_user_status.status', $usertype)
+                ;
+                    $usertype = request('usertype');
+
+                });
+        }
 
         if (request('first_date') != '' && request('first_date') != 0) {
             $first_date = JDate::createFromFormat('Y-m-d', request('first_date'))->carbon->toDateTimeString();
             $applies->whereHas('user', function ($q) use ($first_date) {
-                 $q->where('created_at', '>=',  $first_date );
+                $q->where('created_at', '>=',  $first_date );
             });
         }
-              // 
- 
+        //
+
         if (request('last_date') != '' && request('last_date') != 0) {
             $last_date  = JDate::createFromFormat('Y-m-d', request('last_date'))->carbon->toDateTimeString();
             $applies->whereHas('user', function ($q) use ($last_date) {
-                 $q->where('created_at', '=<',  $last_date );
+                $q->where('created_at', '<=',  $last_date );
             });
         }
 
+        # all_fields contains ...
         # all_fields contains ...
         if (request('all_fields') != '') {
             $query = request('all_fields');
             $tmp = $applies;
             $apply_users = $tmp->pluck('user_id')->toArray();
+            $array = implode(",", $apply_users);
             if(count($apply_users)> 0 )
-                $q =  'AND users.id IN (" . utf8_encode(implode(",", '.$apply_users.')) . ")';
+                $q =  'AND users.id IN ('.$array .')';
             else
                 $q = "";
             $users_ids = DB::select("SELECT 
@@ -622,52 +632,47 @@ class ApplyController extends Controller
             FROM
                 `users`
             LEFT JOIN `resumes` ON `resumes`.`user_id` = `users`.`id`
-            LEFT JOIN `resume_work_experiences` ON `resume_work_experiences`.`resume_id` = `resumes`.`id`
-            LEFT JOIN `resume_educational_details` ON `resume_educational_details`.`resume_id` = `resumes`.`id`
             LEFT JOIN `resume_has_com_skills` ON `resume_has_com_skills`.`resume_id` = `resumes`.`id`
-            LEFT JOIN `job_professional_merites` AS jpm_com_skill ON `resume_has_com_skills`.`professional_merites_id` = jpm_com_skill.`id`
             LEFT JOIN `resume_has_exp_expertises` ON `resume_has_exp_expertises`.`resume_id` = `resumes`.`id`
+            LEFT JOIN `resume_has_p_t_r` ON `resume_has_p_t_r`.`resume_id` = `resumes`.`id`  
+            LEFT JOIN `job_professional_merites` AS jpm_com_skill ON `resume_has_com_skills`.`professional_merites_id` = jpm_com_skill.`id`
             LEFT JOIN `job_professional_merites` AS jpm_exp_expertises ON `resume_has_exp_expertises`.`professional_merites_id` = jpm_exp_expertises.`id`
-            LEFT JOIN `resume_has_p_t_r` ON `resume_has_p_t_r`.`resume_id` = `resumes`.`id`
             LEFT JOIN `job_professional_merites` AS jpm_p_t_r ON `resume_has_p_t_r`.`professional_merites_id` = jpm_p_t_r.`id`
-            LEFT JOIN `resume_family_details` ON `resume_family_details`.`resume_id` = `resumes`.`id`
-            LEFT JOIN `resume_foreign_languages` ON `resume_foreign_languages`.`resume_id` = `resumes`.`id`
-            LEFT JOIN `resume_questions` ON `resume_questions`.`resume_id` = `resumes`.`id`
-            WHERE 
-            (resume_work_experiences.title LIKE '%$query%'
+             where 
+            `resumes`.`id` in (SELECT  distinct(`resume_id`) FROM `resume_work_experiences` where resume_work_experiences.title LIKE '%$query%'
             OR resume_work_experiences.last_post LIKE '%$query%'
             OR resume_work_experiences.cause_interruption LIKE '%$query%'
             OR resume_work_experiences.phone_number LIKE '%$query%'
-            OR resume_work_experiences.important_tasks LIKE '%$query%'
-            OR resume_educational_details.field LIKE '%$query%'
+            OR resume_work_experiences.important_tasks LIKE '%$query%' )
+            or `resumes`.`id` in (SELECT  distinct(`resume_id`) FROM `resume_educational_details` where  resume_educational_details.field LIKE '%$query%'
             OR resume_educational_details.orientation LIKE '%$query%'
             OR resume_educational_details.institute LIKE '%$query%'
             OR resume_educational_details.institute LIKE '%$query%'
             OR resume_educational_details.average LIKE '%$query%'
-            OR resume_educational_details.city LIKE '%$query%'
-            OR resume_has_com_skills.description LIKE '%$query%'
-            OR jpm_com_skill.name LIKE '%$query%'
-            OR resume_has_exp_expertises.description LIKE '%$query%'
-            OR jpm_exp_expertises.name LIKE '%$query%'
-            OR resume_has_p_t_r.institute_name LIKE '%$query%'
-            OR jpm_p_t_r.name LIKE '%$query%'
-            OR resume_family_details.name LIKE '%$query%'
+            OR resume_educational_details.city LIKE '%$query%')
+            or `resumes`.`id` in (SELECT  distinct(`resume_id`) FROM `resume_family_details`  where  resume_family_details.name LIKE '%$query%'
             OR resume_family_details.relation LIKE '%$query%'
             OR resume_family_details.job LIKE '%$query%'
-            OR resume_family_details.organization LIKE '%$query%'      
-            OR resume_foreign_languages.title LIKE '%$query%'
-            OR resume_foreign_languages.certificate LIKE '%$query%'
-            OR resume_questions.Q1 LIKE '%$query%'
+            OR resume_family_details.organization LIKE '%$query%')
+            
+            or `resumes`.`id` in (SELECT  distinct(`resume_id`) FROM `resume_foreign_languages`  where resume_foreign_languages.title LIKE '%$query%'
+            OR resume_foreign_languages.certificate LIKE '%$query%')
+            
+            or `resumes`.`id` in (SELECT  distinct(`resume_id`) FROM `resume_questions`  where resume_questions.Q1 LIKE '%$query%'
             OR resume_questions.Q2 LIKE '%$query%'
             OR resume_questions.Q3 LIKE '%$query%'
             OR resume_questions.Q4 LIKE '%$query%'
             OR resume_questions.sickness_description LIKE '%$query%'
-            OR resume_questions.crime_description LIKE '%$query%'
+            OR resume_questions.crime_description LIKE '%$query%' )    
+            
+                    
+            OR jpm_exp_expertises.name LIKE '%$query%'
+            OR jpm_p_t_r.name LIKE '%$query%'    
             OR users.first_name LIKE '%$query%' 
             OR users.last_name LIKE '%$query%' 
             OR users.email LIKE '%$query%' 
             OR users.mobile LIKE '%$query%' 
-            )  $q");
+             $q");
             $tmp = array();
             foreach ($users_ids as $item)
                 $tmp[] = $item->id;
@@ -693,10 +698,10 @@ class ApplyController extends Controller
         $query_string = (parse_url(URL::full())['query'])?'?'.parse_url(URL::full())['query']:null;
         return view('admin.applies.index', compact([
             'applies', 'job', 'reject_reasons', 'cities','query_string', 'degree_selected', 'new_applies',
-            'seen_applies', 'rejected_applies', 'accepted_applies', 'status','delete_button','first_date','last_date','first_priority_applies','second_priority_applies'
+            'seen_applies', 'rejected_applies', 'accepted_applies', 'status','delete_button','usertype'
         ]));
     }
-//
+    //
     public function export_csv($id, $status = 1)
     {
         $applies=DB::table('users')

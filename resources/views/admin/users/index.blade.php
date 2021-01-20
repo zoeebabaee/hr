@@ -133,6 +133,18 @@
                             {{ Form::label('keyword', 'کلید واژه عمومی') }}
                             {{ Form::text('keyword', old('keyword'), array('class' => 'form-control','minlength'=>3)) }}
                         </div>
+                        <div class="form-group col-lg-3">
+                            <label for="usertype"> نوع کاربر: </label>
+                            <label for="teammate">
+                                <input type="radio" id="teammate" name="usertype" value="1" {{ ($usertype==1)? "checked" : "" }} >
+                                همکار
+                            </label>
+                            <label for="not_teammate">
+                                <input type="radio" id="not_teammate" name="usertype" value="-1" {{ ($usertype==-1)? "checked" : "" }} >
+                                همکار سابق
+                            </label>
+
+                        </div>
 
                         <div class="clearfix"></div>
 

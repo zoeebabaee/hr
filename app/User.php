@@ -129,7 +129,7 @@ class User extends Authenticatable
 
         if(auth()->user()->hasAnyRole('برنامه نویس|سوپرادمین'))
         {
-            return User::where('id', '>=', 1);
+            return User::where('users.id', '>=', 1);
         }
 
         $companies = auth()->user()->company->pluck('id')->toArray();

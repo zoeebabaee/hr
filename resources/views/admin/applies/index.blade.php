@@ -205,6 +205,18 @@
                             {{ Form::text('neighborhood', old('neighborhood'), array('class' => 'form-control')) }}
 
                         </div>
+                        <div class="form-group col-lg-3">
+                            <label for="usertype"> نوع کاربر: </label>
+                            <label for="teammate">
+                                <input type="radio" id="teammate" name="usertype" value="1" {{ ($usertype==1)? "checked" : "" }} >
+                                همکار
+                            </label>
+                            <label for="not_teammate">
+                                <input type="radio" id="not_teammate" name="usertype" value="-1" {{ ($usertype==-1)? "checked" : "" }} >
+                                همکار سابق
+                            </label>
+
+                        </div>
                         <div class="clearfix"></div>
 
                         <div class="form-group col-lg-3">
@@ -448,14 +460,7 @@
                                                                 class="fa fa-female"></i>@endif
 
                                                         {!!'<span id="first_name_'.$apply->id.'">'.$apply->user->first_name.'</span> '.$apply->user->last_name!!}
-                                                        @if(\HR\myFuncs::check_blacklist($apply->user->profile->national_code))
-                                                            <i style="color:red; cursor: pointer;" class="fa fa-warning" title="black_list"></i>
-                                                        @endif
-                                                        @if(\HR\myFuncs::check_worker_state($user->profile->national_code )== 'فعال')
-                                                            <span title="همکار" style="color:red">G</span> &nbsp;
-                                                        @elseif(\HR\myFuncs::check_worker_state($user->profile->national_code )== 'غيرفعال')
-                                                            <span title="همکار سابق" style="color:slategray">G</span>
-                                                        @endif
+
                                                     </p>
                                                     <?php
                                                     $age = substr($apply->user->profile->born_date, 0, 4); // sample : 1361
