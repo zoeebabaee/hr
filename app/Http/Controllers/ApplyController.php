@@ -8,6 +8,7 @@ use HR\City;
 use HR\Company;
 use HR\CurlImpersonated;
 use HR\Job;
+use HR\Resume;
 use HR\User;
 use HR\Degree;
 use HR\JobQuestionAnswer;
@@ -1134,6 +1135,28 @@ class ApplyController extends Controller
         
         die(json_encode($user->company()->get()));
         die(json_encode(base64_encode(file_get_contents('https://people.golrang.com/cv/108738/show.pdf'))));
+    }
+
+    public function quick_view()
+    {
+        $id = request('id');
+        $resume = Resume::find($id);
+        $user = $resume->user;
+
+        $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
+        $user_khedmat_status = DB::table('khedmatmap')->where('site_id','=',$khedmat_status[0]->military_status)->get();
+        $user_khedmat_moaf_status = DB::table('khedmatmoafmap')->where('id','=',$khedmat_status[0]->reason_exemption)->get();
+        $user_khedmat_status = $user_khedmat_status[0];
+        $user_khedmat_moaf_status = $user_khedmat_moaf_status[0];
+
+        $Degrees = DB::table('degrees')->get();
+
+        $degrees_array = $this->degrees_array;
+
+        $age = substr($resume->user->profile->born_date, 0, 4); // sample : 1361
+        $year = \p3ym4n\JDate\JDate::now()->year;// sample : 1397
+        $years_old = $year - $age;
+
     }
 
 }

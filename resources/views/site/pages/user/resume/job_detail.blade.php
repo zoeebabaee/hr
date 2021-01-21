@@ -84,6 +84,13 @@
                 <label>حقوق درخواستی</label>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="people-forms-fields-group">
+                <input type="checkbox" {{($resume->novice =="1"?' checked ':'')}} id="novice" value="1"
+                       name="novice">
+                <label for="novice">علاقه مند به کارآموزی </label>
+            </div>
+        </div>
         <div class="col-md-12">
             <div class="people-forms-fields-group">
                 <div class="fields-required"><img src="/site/default/Template_2019/img/Group 166.svg" /></div>

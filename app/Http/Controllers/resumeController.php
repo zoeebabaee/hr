@@ -250,6 +250,7 @@ class resumeController extends Controller
             $resume = new Resume();
         $resume->user_id = Auth::user()->id;
         $resume->province_id = $request['province_id'];
+        $resume->novice = $request['novice'];
         $resume->referer = $request['our'];
         if ($request['our'] == 6 || $request['our'] == 4) {
             $this->validate($request, [
