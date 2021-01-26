@@ -7,6 +7,17 @@ use Carbon\Carbon;
 
 class ResumeWorkExperience extends Model
 {
+
+    public $appends = ['georgian_start_date','georgian_end_date'];
+    public function getGeorgianStartDateAttribute()
+    {
+        return $this->attributes['start_date'];
+    }
+    public function getGeorgianEndDateAttribute()
+    {
+        return $this->attributes['end_date'];
+    }
+
     public function resume()
     {
         return $this->belongsTo('HR\Resume', 'resume_id');

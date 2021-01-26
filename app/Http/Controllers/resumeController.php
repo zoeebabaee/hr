@@ -3,6 +3,9 @@
 namespace HR\Http\Controllers;
 
 use Barryvdh\Snappy\Facades\SnappyPdf;
+use HR\Apply;
+use HR\Company;
+use HR\CurlImpersonated;
 use HR\Industry;
 use HR\Introducer;
 use HR\JobDepartment;
@@ -327,6 +330,7 @@ class resumeController extends Controller
             if (Industry::find($item)->count())
                 $resume->industries()->attach($item);
         }
+
 
         #department
         $resume->departments()->detach();
@@ -834,6 +838,24 @@ class resumeController extends Controller
                 'جهت تکمیل رزومه ابتدا باید پروفایل خود را تکمیل کنید');
         }
 
+
+       /* $api_company_id=445;
+        $company= Company::where('data_id', $api_company_id)->first();
+        session()->put('token', CurlImpersonated::impersonatedLogin($api_company_id));
+        $token = session()->get('token');
+        session()->put('gng_apply_baseurl',$company['gng_apply_baseurl'] );
+        session()->put('gng_hr_baseurl', $company['gng_hr_baseurl']);
+        session()->put('gng_master_baseurl',$company['gng_master_baseurl'] );
+        session()->put('token', CurlImpersonated::impersonatedLogin($api_company_id));
+        $token = session()->get('token');
+
+
+        $gng_apply_baseurl = session()->get('gng_apply_baseurl');
+        $gng_hr_baseurl = session()->get('gng_hr_baseurl');
+        $gng_master_baseurl = session()->get('gng_master_baseurl');
+
+        $baseurl = ["gng_apply_baseurl"=>$gng_apply_baseurl,"gng_hr_baseurl"=>$gng_hr_baseurl,"gng_master_baseurl"=>$gng_master_baseurl];
+        $departments = (json_decode(CurlImpersonated::companyOrganization($token,$baseurl)))->data;*/
         $resume = Resume::where('user_id', Auth::user()->id)->first();
         if($resume)
         $work_experiences = $resume->work_experiences()->count();
@@ -1000,7 +1022,8 @@ class resumeController extends Controller
 
 
         $work = new ResumeWorkExperience();
-        $work->resume_id = User::find(Auth::user()->id)->resume->id;
+        $resume_id = User::find(Auth::user()->id)->resume->id;
+        $work->resume_id = $resume_id;
         $work->title = $request['title'];
         $work->start_date = $request['start_date'];
         if (isset($request['end_date']) && $request['end_date'] != '')
@@ -1009,11 +1032,15 @@ class resumeController extends Controller
             $work->end_date = null;
         $work->last_post = $request['last_post'];
         $work->cause_interruption = $request['cause_interruption'];
+        $work->reason_to_move = $request['move_reason'];
         $work->phone_number = $request['phone_number'];
         $work->important_tasks = $request['important_tasks'];
         $work->province_id = $request['province_id'];
         if ($work->save())
+        {
+            $this->calculate_years_of_experience($resume_id);
             return $work->id;
+        }
         else
             return 0;
     }
@@ -1044,8 +1071,12 @@ class resumeController extends Controller
         $work->phone_number = $request['phone_number'];
         $work->important_tasks = $request['important_tasks'];
 
+
         if ($work->save())
+        {
+            $this->calculate_years_of_experience($work->resume_id);
             return $work->id;
+        }
         else
             return 0;
     }
@@ -1057,8 +1088,42 @@ class resumeController extends Controller
                 'id' => 'required|exists:resume_work_experiences,id'
             ]
         );
+        $this->calculate_years_of_experience(ResumeWorkExperience::where("id" ,$request['id'] )->first()->resume_id);
         ResumeWorkExperience::find($request['id'])->delete();
+
         return 1;
+    }
+
+    public  function  calculate_years_of_experience($resume_id)
+    {
+        $experiences = ResumeWorkExperience::where('resume_id', $resume_id)->get();
+        $total = 0;
+        foreach($experiences as $experience)
+        {
+            if(is_null($experience->end_date))
+                $enddate = $experience->updated_at ;
+            else
+                $enddate = $experience->georgian_end_date;
+
+            if(is_null($experience->start_date))
+                continue;
+            else
+                $startdate = $experience->georgian_start_date;
+            $date1=date_create($startdate);
+            $date2=date_create($enddate);
+            $diff=date_diff($date1,$date2);
+            $diff_date = $diff->format("%R%a");
+            if (strpos($diff_date, '-') !== false)
+                continue;
+            else
+                $total +=$diff->format("%a");
+            }
+        $total = $total/365;
+        \DB::table('resumes')
+            ->where('id', $resume_id)
+            ->update(array('work_experience_years' => $total));
+        return $total;
+
     }
 
     public function ajax_get_education_field_name_by_id(Request $request){
@@ -1097,7 +1162,8 @@ class resumeController extends Controller
         ]);
 
         $edu = new ResumeEducationalDetails();
-        $edu->resume_id = User::find(Auth::user()->id)->resume->id;
+        $resume_id =  User::find(Auth::user()->id)->resume->id;
+        $edu->resume_id =$resume_id;
         $edu->grade = $request['grade'];
         $edu->field_type = $request['field_type'];
         $edu->api_education_field_type_id = $request['field_type_id'];
@@ -1115,7 +1181,9 @@ class resumeController extends Controller
         $edu->end_date = $request['end_date'];
 
         if ($edu->save())
+        {
             return $edu->id;
+        }
         else
             return 0;
     }
@@ -1210,6 +1278,95 @@ class resumeController extends Controller
             );
         endif;
 	    return view('site.pages.user.resume.final_step', compact('resume'));
+
+    }
+
+    public function quick_view()
+    {
+        $id = request('apply_id');
+        $applies = explode(',',request('applies_id'));
+        $index = array_search($id , $applies,true);
+        if($index == 9)
+        {
+            $next_index = -1;
+            $prev_index = 8;
+            $prev_apply_value = $applies[$prev_index];
+        }
+        else if($index == 0)
+        {
+            $next_index = 1;
+            $next_apply_value = $applies[$next_index];
+            $prev_index = -1;
+        }
+        else{
+            $next_index = $index+1;
+            $prev_index = $index-1;
+            $next_apply_value = $applies[$next_index];
+            $prev_apply_value = $applies[$prev_index];
+        }
+
+        $apply = Apply::where('id',$id)->first();
+        $resume = $apply->user->resume;
+        $user = $resume->user;
+        $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
+        $user_khedmat_status = DB::table('khedmatmap')->where('site_id','=',$khedmat_status[0]->military_status)->get();
+        $user_khedmat_moaf_status = DB::table('khedmatmoafmap')->where('id','=',$khedmat_status[0]->reason_exemption)->get();
+        $user_khedmat_status = $user_khedmat_status[0];
+        $user_khedmat_moaf_status = $user_khedmat_moaf_status[0];
+
+        $Degrees = DB::table('degrees')->get();
+        $degrees_array = $this->degrees_array;
+        $age = substr($resume->user->profile->born_date, 0, 4); // sample : 1361
+        $year = \p3ym4n\JDate\JDate::now()->year;// sample : 1397
+        $years_old = $year - $age;
+        return view('admin.quickView.resume_modal',compact(['resume','user_khedmat_status','user_khedmat_moaf_status','degrees_array','years_old','index'
+        ,'next_index','prev_index','prev_apply_value','next_apply_value'
+        ]));
+
+    }
+
+    public function show_resume()
+
+    {
+        $id = 75135;
+        $applies = explode(',',request('applies_id'));
+        $index = array_search($id , $applies,true);
+        if($index == 9)
+        {
+            $next_index = -1;
+            $prev_index = 8;
+            $prev_apply_value = $applies[$prev_index];
+        }
+        else if($index == 0)
+        {
+            $next_index = 1;
+            $next_apply_value = $applies[$next_index];
+            $prev_index = -1;
+        }
+        else{
+            $next_index = $index+1;
+            $prev_index = $index-1;
+            $next_apply_value = $applies[$next_index];
+            $prev_apply_value = $applies[$prev_index];
+        }
+
+        $apply = Apply::where('id',$id)->first();
+        $resume = $apply->user->resume;
+        $user = $resume->user;
+        $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
+        $user_khedmat_status = DB::table('khedmatmap')->where('site_id','=',$khedmat_status[0]->military_status)->get();
+        $user_khedmat_moaf_status = DB::table('khedmatmoafmap')->where('id','=',$khedmat_status[0]->reason_exemption)->get();
+        $user_khedmat_status = $user_khedmat_status[0];
+        $user_khedmat_moaf_status = $user_khedmat_moaf_status[0];
+
+        $Degrees = DB::table('degrees')->get();
+        $degrees_array = $this->degrees_array;
+        $age = substr($resume->user->profile->born_date, 0, 4); // sample : 1361
+        $year = \p3ym4n\JDate\JDate::now()->year;// sample : 1397
+        $years_old = $year - $age;
+        return view('admin.resumes.show_in_new_tab',compact(['resume','user_khedmat_status','user_khedmat_moaf_status','degrees_array','years_old','index'
+            ,'next_index','prev_index','prev_apply_value','next_apply_value'
+        ]));
 
     }
 

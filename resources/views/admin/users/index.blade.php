@@ -190,11 +190,10 @@
 
                         <div class="clearfix"></div>
                         <div class="clearfix"></div>
-                        
+
                         <div class="col-lg-3">
                         <div class="form-group" id="data_1">
-                            <label class="font-noraml">
-                                 از  </label> 
+                            <label class="font-noraml">تاریخ ثبت نام از</label>
                             <div class="input-group date">
                                 <input autocomplete="off"
                                         type="text"
@@ -212,8 +211,7 @@
                           
                         <div class="col-lg-3">
                         <div class="form-group" id="data_2">
-                            <label class="font-noraml">
-                                 تا  </label> 
+                            <label class="font-noraml">تاریخ ثبت نام تا  </label>
                             <div class="input-group date">
                                 <input
                                         type="text"
@@ -228,7 +226,50 @@
                             </div>
                         </div>
                         </div>
+                        <div class="form-group col-lg-3">
+                            {{ Form::label('resume_status', 'وضعیت رزومه') }}
+                            {{ Form::select('resume_status', [0=>'یک گزینه انتخاب کنید',1=>'دارای رزومه',2=>'بدون رزومه'],null, array('class' => 'form-control')) }}
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <label for="participate_type"> نوع همکاری: </label>
+                            <label for="novice">
+                                <input type="radio" id="novice" name="participate_type" value="1" {{ ($participate_type==1)? "checked" : "" }} >
+                                کارآموزی
+                            </label>
+                            <label for="not_novice">
+                                <input type="radio" id="not_novice" name="participate_type" value="0" {{ ($participate_type==0)? "checked" : "" }} >
+                                غیر کارآموزی
+                            </label>
+
+                        </div>
+
                         <div class="clearfix"></div>
+                        <div class="form-group col-lg-1">
+                            {{ Form::label('to_age', 'فیلتر سنی : ') }}
+                        </div>
+
+                        <div class="form-group col-lg-1">
+                            {{ Form::text('from_age', old('start_age'), array('class' => 'form-control','placeholder'=>'از سن')) }}
+                        </div>
+                        <div class="form-group col-lg-1">
+                            {{ Form::text('to_age', old('end_age'), array('class' => 'form-control' , 'placeholder'=>'تا سن')) }}
+
+                        </div>
+
+                        <div class="form-group col-lg-1">
+                            {{ Form::label('years', ' سنوات : ') }}
+                        </div>
+
+                        <div class="form-group col-lg-1">
+                            {{ Form::text('from_experience_year', old('from_experience_year'), array('class' => 'form-control','placeholder'=>'از ')) }}
+                        </div>
+                        <div class="form-group col-lg-1">
+                            {{ Form::text('to_experience_year', old('to_experience_year'), array('class' => 'form-control' , 'placeholder'=>'تا ')) }}
+
+                        </div>
+
+                        <div class="clearfix"></div>
+
                         <button class="btn btn-primary pull-left" type="submit">اعمال فیلترهای جستجو</button>
                         @if(isset($_GET['first_name']))
                             <a href="{{route('users.index')}}" style="margin-left: 2px"
@@ -440,7 +481,7 @@
 @section('scripts_page')
 
     <script>
-    
+
     @if($first_date)
     $('#data_1 .input-group.date > input').pDatepicker({
             format: 'YYYY-MM-DD',

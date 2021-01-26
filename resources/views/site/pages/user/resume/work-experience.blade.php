@@ -112,6 +112,7 @@
                     <input id="start_date_{{$job->id}}" value="{{$job->start_date}}" type="hidden">
                     <input id="end_date_{{$job->id}}" value="{{$job->end_date}}" type="hidden">
                     <input id="cause_interruption_{{$job->id}}" value="{{$job->cause_interruption}}" type="hidden">
+                    <input id="move_reason_{{$job->id}}" value="{{$job->reason_to_move}}" type="hidden">
                     <input id="important_tasks_{{$job->id}}" value="{{$job->important_tasks}}" type="hidden">
                     <input id="province_id_{{$job->id}}" value="{{$job->province_id}}" type="hidden">
                 </div>
@@ -122,6 +123,9 @@
                         <div class="fields-required"><img src="/site/default/Template_2019/img/Group 166.svg"/></div>
                         <input maxlength="100" id="title" type="text" class="form-control people-forms-fields"
                                oninput="$('#title-help').text('')">
+
+
+
                         <label class="chosen-drop-label">سازمان</label>
                         <span id="title-help" class="help-block"></span>
                     </div>
@@ -250,6 +254,19 @@
                                                <label>علت قطع همکاری</label>
 
                         <span id="cause_interruption-help" class="help-block"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="people-forms-fields-group d-none">
+                        <div class="fields-required"><img src="/site/default/Template_2019/img/Group 166.svg"/></div>
+                        <textarea name="move_reason" id="move_reason"
+                                  class="form-control form-control-area comment-contact" rows="3"
+                                  onchange="$('#move_reason-help').text('')"
+                        ></textarea>
+                        <label>دلیل تمایل به جابه جایی</label>
+
+                        <span id="move_reason-help" class="help-block"></span>
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -410,6 +427,14 @@
                     validity = false;
                 }
             }
+
+            if($('#until_now').is(':checked'))
+            {
+                if ($('#move_reason').val() === '') {
+                    $('#move_reason-help').text('فیلد اجباری');
+                    validity = false;
+                }
+            }
             if (($('#phone_number_code').val() != "") && (/[0۰٠][۰۱۲۳۴۵۶۷۸۹0123456789٠١٢٣٤٥٦٧٨٩]{2}/.test($('#phone_number_code').val()) == false)) {
                 $('#phone_number-help').text('مقدار پیش شماره نامعتبر');
                 validity = false;
@@ -422,8 +447,8 @@
                     $('#end_year-help').text('سال پایان اشتباه است');
                     validity = false;
                 }
-                else
-                    validity=true;
+                /*else
+                    validity=true;*/
 
             }
             if($('#start_year').val() == $('#end_year').val())
@@ -457,7 +482,9 @@
             $('.edit-item').html("<i class=\"fa fa fa-pencil-square-o\" aria-hidden=\"true\"></i> ویرایش");
             $('.cancel').removeClass("cancel");
             $('#title').val('');
+            $('#title').trigger("chosen:updated");
             $('#last_post').val('');
+            $('#move_reason').val('');
             $('#phone_number_ext').val('');
             $('#phone_number_code').val('');
             $('#cause_interruption').val('');
@@ -491,6 +518,7 @@
                     id: id
                 }
             ).done(function (data) {
+                alert(data)
                 $('#row_' + id).remove();
             });
         });
@@ -527,7 +555,10 @@
             $('#save_job').attr('job_id', $(this).attr('id').substr(1));
 
             $('#title').val($('#title' + $(this).attr('id')).html());
-            $('#last_post').val($('#last_post' + $(this).attr('id')).html());
+            $('#title').trigger("chosen:updated");
+
+                $('#last_post').val($('#last_post' + $(this).attr('id')).html());
+                $('#move_reason').val($('#move_reason' + $(this).attr('id')).val());
             $('#phone_number_ext').val($('#phone_number_ext' + $(this).attr('id')).html());
             $('#phone_number_code').val($('#phone_number_code' + $(this).attr('id')).html());
             $('#cause_interruption').val($('#cause_interruption' + $(this).attr('id')).val());
@@ -547,16 +578,17 @@
                 $('#end_month').val('');
                 $('#end_year').val('');
                 $('#cause_interruption').val('');
+                $( ".people-forms-fields-group:has(#cause_interruption)" ).hide();
+                $( ".people-forms-fields-group:has(#move_reason)" ).removeClass('d-none');
                 $('#end_month').attr('disabled', 'disabled');
                 $('#end_year').attr('disabled', 'disabled');
-                $('#cause_interruption').attr('disabled', 'disabled');
                 $('#end_month').trigger("chosen:updated");
                 $('#end_year').trigger("chosen:updated");
             } else {
                 //enable chosens
                 $('#end_month').removeAttr('disabled');
                 $('#end_year').removeAttr('disabled');
-                $('#cause_interruption').removeAttr('disabled');
+                $( ".people-forms-fields-group:has(#cause_interruption)" ).show();
                 $('#end_month').trigger("chosen:updated");
                 $('#end_year').trigger("chosen:updated");
 
@@ -587,9 +619,12 @@
                 $('#end_month').val('');
                 $('#end_year').val('');
                 $('#cause_interruption').val('');
+                $( ".people-forms-fields-group:has(#cause_interruption)" ).hide();
+                $( ".people-forms-fields-group:has(#move_reason)" ).removeClass('d-none');
+                $('#cause_interruption').attr('disabled', 'disabled');
+                $('#move_reason').removeAttr('disabled');
                 $('#end_month').attr('disabled', 'disabled');
                 $('#end_year').attr('disabled', 'disabled');
-                $('#cause_interruption').attr('disabled', 'disabled');
                 $('#end_month').trigger("chosen:updated");
                 $('#end_year').trigger("chosen:updated");
             } else {
@@ -597,7 +632,10 @@
                 $('#end_month').trigger("chosen:updated");
                 $('#end_year').removeAttr('disabled');
                 $('#end_year').trigger("chosen:updated");
-                $('#cause_interruption').removeAttr('disabled');
+                $('#cause_interruption').removeAttr("disabled");
+                $('#move_reason').attr('disabled', 'disabled');
+                $( ".people-forms-fields-group:has(#cause_interruption)" ).show();
+                $( ".people-forms-fields-group:has(#move_reason)" ).addClass('d-none');
             }
         });
 
@@ -619,10 +657,15 @@
             }
             var last_post = $('#last_post').val();
             var cause_interruption;
+            var move_reason;
             if ($("#until_now").is(':checked')) {
                 cause_interruption = null;
+                move_reason = $('#move_reason').val();
+
             } else {
                 cause_interruption = $('#cause_interruption').val();
+                move_reason = null;
+
             }
             var phone_number = ($('#phone_number_ext').val() == "" ? "" : $("#phone_number_code").val() + $('#phone_number_ext').val());
             var important_tasks = $("#important_tasks").val();
@@ -638,6 +681,7 @@
                         until_now: until_now,
                         last_post: last_post,
                         cause_interruption: cause_interruption,
+                        move_reason: move_reason,
                         phone_number: phone_number,
                         important_tasks: important_tasks,
                         province_id: province_id,
@@ -679,6 +723,7 @@
                                 '<input id="cause_interruption_' + data + '" value="' + cause_interruption + '" type="hidden">' +
                                 '<input id="important_tasks_' + data + '" value="' + important_tasks + '" type="hidden">' +
                                 '<input id="province_id_' + data + '" value="' + province_id + '" type="hidden">' +
+                                '<input id="move_reason_' + data + '" value="' + move_reason + '" type="hidden">' +
                                 '<div class="col-xs-12 action-container">' +
                                 '<div class="edu-result-row-btn text-right">' +
                                 '<div id="_' + data + '" class="edit-item" style="display: inline-block;cursor: pointer">' +
@@ -718,6 +763,7 @@
                         last_post: last_post,
                         cause_interruption: cause_interruption,
                         phone_number: phone_number,
+                        move_reason: move_reason,
                         important_tasks: important_tasks,
                         province: province_id,
                     }
@@ -739,6 +785,7 @@
                                 $('#end_date_' + job_id).val(end_date);
 
                             $('#cause_interruption_' + job_id).val(cause_interruption);
+                            $('#move_reason_' + job_id).val(move_reason);
                             $('#important_tasks_' + job_id).val(important_tasks);
 
                             $('#provinces_' + job_id).val(province_id);

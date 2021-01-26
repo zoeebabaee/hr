@@ -55,6 +55,7 @@ Route::get('/cv/{id?}/show.pdf','ApiController@apiGetUploadedCv')->name('api.sho
 Route::get('/cv/show.pdf/{national_code?}/{token?}','ApiController@apiGetOnlineCv')->name('api.get.online.cv');
 
 Route::get('/resumes/{id}/{token?}/show','resumeController@apiShowResume')->name('api.resumes.show');
+Route::get('/resumes/zohre','resumeController@show_resume')->name('api.resumes.zoee');
 
 
 
@@ -86,6 +87,7 @@ Route::prefix('adpanel')->group(
         Route::get('/deactive','BlacklistController@deactive');
         Route::get('/new_table','BlacklistController@new_table');
         
+        Route::get('/personnelapi/update_working_years','personnelapi\update_work_experienceController@update_years');
         Route::get('/personnelapi/addprovince','personnelapi\ProvinceController@addProvince');
         Route::get('/personnelapi/addallcity','personnelapi\CityController@addAllCity');
         Route::get('/personnelapi/addcompanies','personnelapi\CompanyController@addCompanies');
@@ -118,6 +120,7 @@ Route::prefix('adpanel')->group(
         Route::put('/roles/{roles}','RoleController@update')->name('roles.update');
         Route::get('/roles/{roles}/edit','RoleController@edit')->name('roles.edit');
 
+        Route::post('/resumes/quick_view','resumeController@quick_view')->name('resumes.quick_view');
         Route::get('/resumes','resumeController@index')->name('resumes.index');
         Route::get('/resumes/{resume}/show','resumeController@show')->name('resumes.show');
         Route::get('/resumes/{resume}/show2','resumeController@show2')->name('resumes.show2');
