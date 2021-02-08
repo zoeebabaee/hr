@@ -96,6 +96,10 @@
 
 @endsection
 @section('content')
+
+
+<div id="myAjaxTarget"> @include('admin.quickView.resume_modal') </div>
+
     <img  id="loading" src="/loadinggif.gif" alt="loading" title="loading"
           class="img-responsive  text-right img-{{$apply->id}}"
           style="right:50%;left:50%;width:15%;position:fixed;top:10%;z-index:9999999999;background-size: cover; display: none">
@@ -204,17 +208,12 @@
                             {{ Form::label('neighborhood', 'محله/منطقه') }}
                             {{ Form::text('neighborhood', old('neighborhood'), array('class' => 'form-control')) }}
 
+
                         </div>
                         <div class="form-group col-lg-3">
                             <label for="usertype"> نوع کاربر: </label>
-                            <label for="teammate">
-                                <input type="radio" id="teammate" name="usertype" value="1" {{ ($usertype==1)? "checked" : "" }} >
-                                همکار
-                            </label>
-                            <label for="not_teammate">
-                                <input type="radio" id="not_teammate" name="usertype" value="-1" {{ ($usertype==-1)? "checked" : "" }} >
-                                همکار سابق
-                            </label>
+                            {{ Form::select('usertype', [0=>'یک گزینه انتخاب کنید',1=>'همکار',-1=>'همکار سابق',0=>'هیچ کدام'],null, array('class' => 'form-control')) }}
+
 
                         </div>
                         <div class="clearfix"></div>
@@ -245,12 +244,25 @@
                             </select>
                         </div>
 
+                        <div class="form-group col-lg-3">
+                            <label for="participate_type"> نوع همکاری: </label>
+                            <label for="novice">
+                                <input type="radio" id="novice" name="participate_type" value="1" {{ ($participate_type==1)? "checked" : "" }} >
+                                کارآموزی
+                            </label>
+                            <label for="not_novice">
+                                <input type="radio" id="not_novice" name="participate_type" value="0" {{ ($participate_type==0)? "checked" : "" }} >
+                                غیر کارآموزی
+                            </label>
+
+                        </div>
+
                         <div class="clearfix"></div>
-                        
+
                         <div class="col-lg-3">
                         <div class="form-group" id="data_1">
                             <label class="font-noraml">
-                                 از  </label> 
+                                 از  </label>
                             <div class="input-group date">
                                 <input autocomplete="off"
                                         type="text"
@@ -265,11 +277,11 @@
                             </div>
                         </div>
                         </div>
-                          
+
                         <div class="col-lg-3">
                         <div class="form-group" id="data_2">
                             <label class="font-noraml">
-                                 تا  </label> 
+                                 تا  </label>
                             <div class="input-group date">
                                 <input
                                         type="text"
@@ -284,11 +296,11 @@
                             </div>
                         </div>
                         </div>
-                        
+
                         <div class="clearfix"></div>
-                        
-                        
-                        
+
+
+
                         <button class="btn btn-primary pull-left" type="submit">اعمال فیلترهای جستجو</button>
                         <a href="{{route('applies.index',$job->id)}}" style="margin-left: 2px"
                            class="btn btn-danger pull-right">حذف فیلتر ها</a>
@@ -366,12 +378,12 @@
                         </div>
                     </a>
                 </div>
-                
+
                 <div class="col-lg-2">
                     <a href="{{route('applies.index', ['id' => $job->id,'status'=>9])}}">
-                        <div class="widget style1 yellow-bg widget-left-bg{{$status==9?'-active':''}}">
+                        <div class="widget style1 blue-bg widget-left-bg{{$status==9?'-active':''}}">
                             <div class="row">
-                                <div class="col-xs-4 widget-right-yellow">
+                                <div class="col-xs-4 widget-right-blue">
                                     <i class="fa fa-square-o fa-3x" style="line-height: 100px"></i>
                                 </div>
                                 <div class="col-xs-8 text-right">
@@ -382,14 +394,14 @@
                         </div>
                     </a>
                 </div>
-                
-                
-                
+
+
+
                 <div class="col-lg-2">
                     <a href="{{route('applies.index', ['id' => $job->id,'status'=>10])}}">
-                        <div class="widget style1 yellow-bg widget-left-bg{{$status==10?'-active':''}}">
+                        <div class="widget style1 black-bg widget-left-bg{{$status==10?'-active':''}}">
                             <div class="row">
-                                <div class="col-xs-4 widget-right-yellow">
+                                <div class="col-xs-4 widget-right-black">
                                     <i class="fa fa-square-o fa-3x" style="line-height: 100px"></i>
                                 </div>
                                 <div class="col-xs-8 text-right">
@@ -408,10 +420,45 @@
                     <button id="de-select-all" style="display: none;width: 100px;"
                             class="btn btn-warning"><i class="fa fa-check-square-o"></i> انتخاب همه
                     </button>
-                    <a title="برگزیده"
+                    @if($apply->status != 4 && $delete_button == 0 )
+                        @if($apply->status != 4 && ($apply->status != 9 && $apply->status != 10) && $delete_button == 0 )
+                        <a title="برگزیده"
                        onclick="$('#selects-form').attr('action', '{{route('applies.seenAll')}}'); $('#selects-form').submit();"
-                       style="margin-right: 10px;" class="btn btn-primary"><i style="font-size: 20px;"
+                       style="margin-right: 10px;" class="btn btn-primary">برگزیده<i style="font-size: 20px;"
                                                                               class="fa fa-check-square-o"></i> </a>
+
+                        <a title="اولویت اول"
+                           onclick="$('#selects-form').attr('action', '{{route('applies.firstpriorityAll')}}'); $('#selects-form').submit();"
+                           style="margin-right: 10px;" class="btn btn-primary">اولویت اول<i style="font-size: 20px;"
+                                                                                         class="fa fa-check-square-o"></i> </a>
+
+                        <a title="اولویت دوم"
+                           onclick="$('#selects-form').attr('action', '{{route('applies.secondpriorityAll')}}'); $('#selects-form').submit();"
+                           style="margin-right: 10px;" class="btn btn-primary">اولویت دوم<i style="font-size: 20px;"
+                                                                                         class="fa fa-check-square-o"></i> </a>
+                        @endif
+
+                        @if($apply->status == 9 && $delete_button == 0 )
+                        <a title="اولویت دوم"
+                           onclick="$('#selects-form').attr('action', '{{route('applies.secondpriorityAll')}}'); $('#selects-form').submit();"
+                           style="margin-right: 10px;" class="btn btn-primary">اولویت دوم<i style="font-size: 20px;"
+                                                                                            class="fa fa-check-square-o"></i> </a>
+                        @endif
+                        @if($apply->status == 4 && $delete_button == 0 )
+                        <a title="تایید نهایی"
+                           onclick="$('#selects-form').attr('action', '{{route('applies.acceptAll')}}'); $('#selects-form').submit();"
+                           style="margin-right: 10px;" class="btn btn-primary">اولویت دوم<i style="font-size: 20px;"
+                                                                                            class="fa fa-check-square-o"></i> </a>
+                        @endif
+
+                       @if($apply->status != 3 &&($apply->status != 9 ) && $delete_button == 0 )
+                        <a title="نامتناسب"
+                           onclick="$('#selects-form').attr('action', '{{route('applies.acceptAll')}}'); $('#selects-form').submit();"
+                           style="margin-right: 10px;" class="btn btn-primary">اولویت دوم<i style="font-size: 20px;"
+                                                                                            class="fa fa-check-square-o"></i> </a>
+                        @endif
+                        @endif
+
                     {{--@if(auth()->user()->hasAnyRole('برنامه نویس'))--}}
                     {{--<a title="خروجی اکسل از رزومه های فیلتر شده" style="margin-right: 10px;"--}}
                     {{--href="/adpanel/apply-list-export/{{$job->id}}/{{$status}}{{(string)$query_string}}"--}}
@@ -429,6 +476,7 @@
 
 
                                 @foreach($applies as $apply)
+                                    <input id="changestatus{{$apply->id}}" value="@if($apply->status == 1)0 @else 1 @endif" type="hidden">
                                     <input type="hidden" id="reject_reason_{{$apply->id}}"
                                            value="{{$apply->reject_reason}}">
                                     <input type="hidden" id="reject_description_{{$apply->id}}"
@@ -449,8 +497,10 @@
                                             <div class="col-lg-3">
                                                 <div class="col-lg-6">
 
-                                                    <img src="{{$apply->user->avatar}}" class="img-circle"
-                                                         style="width: 80px;height: 80px;padding:1px;border:1px #888 solid;"/>
+                                                    <a href="{{route('api.resumes.show_in_new_tab',$apply->id)}}">
+                                                        <img src="{{$apply->user->avatar}}" class="img-circle"
+                                                             style="width: 80px;height: 80px;padding:1px;border:1px #888 solid;"/>
+                                                    </a>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <p> @if($apply->user->profile->gender == 1)<i
@@ -503,6 +553,13 @@
                                                             </button>
                                                         </a>
                                                     </p>
+                                                    <a data-toggle="modal" onclick="get_resume({{$apply->id}},0,'apply_page')">
+
+                                                    <button style="width: 85px; text-align: left;" type="button" class="btn btn-sm btn-primary btn-outline">
+
+
+                                                        quick view</button></a>
+
                                                 @endif
                                                 @if(auth()->user()->hasPermissionTo('cv-مشاهده') || auth()->user()->hasAnyRole('سوپرادمین|برنامه نویس') && Storage::disk('resume')->exists('cv/'.\HR\myFuncs::spilit_string($apply->user->id).'/resume.pdf'))
                                                     <p>
@@ -529,30 +586,30 @@
                                                     <option>افزودن به </option>
                                                 @if($apply->status == 10 && $delete_button == 0 )
 
-                                                  
-                                                    
-                                                    <option value="secondPriorityAjax">
+
+
+                                                    <option value="firstPriorityAjax">
                                                       اولویت اول
                                                     </option>
-                                                
-                                                @endif    
+
+                                                @endif
                                                 @if($apply->status != 1 && ($apply->status != 9 && $apply->status != 10) && $delete_button == 0 )
-                                                 
+
                                                     <option value="m2AjaxBaresiNashodeh">
                                                          بررسی نشده
                                                     </option>
                                                 @endif
                                                 @if($apply->status != 4 && ($apply->status != 9 && $apply->status != 10) && $delete_button == 0 )
-                                                   
+
 <!---->
                                                     <option value="m2Ajax">
                                                         برگزیده
                                                     </option>
-                                                    
+
                                                     <option value="firstPriorityAjax">
                                                         اولویت اول
                                                     </option>
-                                                    
+
                                                     <option value="secondPriorityAjax">
                                                         اولویت دوم
                                                     </option>
@@ -561,16 +618,16 @@
 
 
                                                 @endif
-                                                
+
                                                 @if($apply->status == 9 && $delete_button == 0 )
-                                                
+
                                                  <option value="secondPriorityAjax">
                                                         اولویت دوم
                                                     </option>
-                                                @endif    
+                                                @endif
                                                 @if($apply->status == 4 && $delete_button == 0 )
-                                                   
-                                                  
+
+
                                                     <option value="m2AjaxAccept">
                                                         تایید نهایی
                                                     </option>
@@ -580,27 +637,27 @@
 
                                                 @if($apply->status != 3 &&($apply->status != 9 ) && $delete_button == 0 )
 
-                                                  
-                                                    
+
+
                                                     <option value="namotenaseb">
                                                       نامتناسب
                                                     </option>
-                                                
+
                                                 @endif
-                                                
-                                                
+
+
                                                 </select>
                                                 @endif
-                                                
+
                                                 @if($apply->status == 3 && ($apply->reject_reason && !empty($apply->reject_description)) )
                                                    <button type="button" onclick="apply_id ='{{$apply->id}}';"
                                                             class="btn btn-xs btn-info dim user-reject-reason">
                                                         <i class="fa fa-info"></i>
                                                         علت رد
                                                     </button>
-                                                    
+
                                                 @endif
-                                                
+
                                                 <p><a target="_blank"
                                                       href="{{route('users.apply_list',$apply->user->id)}}">مشاهده سایر
                                                         درخواست ها</a></p>
@@ -833,40 +890,86 @@
     {{ Html::script('/admin/'.config('app.admin_theme').'/jalalicalendar/jalali.js') }}
     {{ Html::script('/admin/'.config('app.admin_theme').'/jalalicalendar/calendar.js') }}
     {{ Html::script('/admin/'.config('app.admin_theme').'/jalalicalendar/calendar-setup.js') }}
-    {{ Html::script('/admin/'.config('app.admin_theme').'/jalalicalendar/lang/calendar-fa.js') }}  
+    {{ Html::script('/admin/'.config('app.admin_theme').'/jalalicalendar/lang/calendar-fa.js') }}
     {{ Html::script('/admin/'.config('app.admin_theme').'/js/plugins/persian-datepicker/persian-date.js') }}
     {{ Html::script('/admin/'.config('app.admin_theme').'/js/plugins/persian-datepicker/persian-datepicker.min.js') }}
     {{ Html::script('/site/'.config('app.site_theme').'/js/chosen.jquery.js') }}
+    {{ Html::script('/admin/'.config('app.admin_theme').'/js/plugins/toastr/toastr.min.js') }}
+
 
 @endsection
 @section('scripts_page')
 
     <script>
-    
-    
+            var applies_id = {{$applies_id}}
+            console.log(applies_id)
+        function get_resume(apply_id,prev_apply_id,page_name){
+
+            if(prev_apply_id != 0 && $('#changestatus'+prev_apply_id).val() == 0)
+            {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    positionClass: 'toast-bottom-left',
+                    timeOut: 10000
+                };
+                toastr.success('وضعیت رزومه بدون تغییر است');
+            }
+                $.ajax({
+                    type: 'POST',
+                    url: "/adpanel/resumes/quick_view",
+                    data: "apply_id=" + apply_id +"&page_name=" + page_name + "&applies_id=" + applies_id + "&_token=<?=csrf_token();?>",
+                    success: function (data) {
+
+                        /*  if($("#prev_index").val == -1)
+                          {
+                              $("#prev_resume").hide();
+                              //$("#next_resume").hide();
+                          }
+                          else if($("#next_index").val == -1)
+                          {
+                              //$("#prev_resume").hide();
+                              $("#next_resume").html('zoee');
+                          }*/
+                        $('#myAjaxTarget').html(data);
+                        $('#exampleModalLong').modal('show');
+
+
+                    }
+                });
+
+
+
+            }
+
+
+
+
     function changeStatus(selectObject,applyid)
     {
-        var value = selectObject.value; 
+        $('#changestatus'+applyid).val(1)
+        var value = selectObject.value;
         if(value =="m2AjaxBaresiNashodeh")
             m2AjaxBaresiNashodeh(applyid);
-        else if(value == "m2Ajax")   
+        else if(value == "m2Ajax")
             m2Ajax(applyid)
-        else if(value == "m2AjaxAccept")   
-            m2AjaxAccept(applyid) 
-        else if(value == "firstPriorityAjax")   
-            firstPriorityAjax(applyid)  
-        else if(value == "secondPriorityAjax")   
+        else if(value == "m2AjaxAccept")
+            m2AjaxAccept(applyid)
+        else if(value == "firstPriorityAjax")
+            firstPriorityAjax(applyid)
+        else if(value == "secondPriorityAjax")
             secondPriorityAjax(applyid)
-        else if(value == "namotenaseb")   
+        else if(value == "namotenaseb")
         {
             apply_id = applyid;
             $('#rejectReasonModal').modal('show');
-    
+
         }
-        
+
     }
-    
-    
+
+
     @if($first_date)
     $('#data_1 .input-group.date > input').pDatepicker({
             format: 'YYYY-MM-DD',
@@ -892,7 +995,7 @@
             },
             autoClose: true
         });
-    
+
         var apply_id = '';
 
         function scrollto(id) {
@@ -1000,8 +1103,8 @@
                        var status = obj[0]['has_error'];
                         var message = obj[0]['message'];
                         $('#loading').hide();
-                        
-                        
+
+
 
                         if(status == 0)
                         {
@@ -1070,8 +1173,8 @@
                        var status = obj[0]['has_error'];
                         var message = obj[0]['message'];
                         $('#loading').hide();
-                        
-                        
+
+
 
                         if(status == 0)
                         {
@@ -1140,8 +1243,8 @@
                        var status = obj[0]['has_error'];
                         var message = obj[0]['message'];
                         $('#loading').hide();
-                        
-                        
+
+
 
                         if(status == 0)
                         {
