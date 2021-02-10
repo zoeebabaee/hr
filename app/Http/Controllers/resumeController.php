@@ -13,6 +13,7 @@ use HR\JobProfessionalMerites;
 use HR\myDate;
 use HR\myFuncs;
 use HR\Province;
+use HR\RejectReasons;
 use HR\Resume;
 use HR\Job;
 use HR\ResumeContractType;
@@ -26,6 +27,7 @@ use HR\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Knp\Snappy\Pdf;
 use Carbon\Carbon;
@@ -75,6 +77,8 @@ class resumeController extends Controller
     {
 
         $resume = Resume::find($id);
+        $resume_viewed = $this->view_resume($id);
+
         $user = $resume->user;
 
         $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
@@ -253,7 +257,6 @@ class resumeController extends Controller
             $resume = new Resume();
         $resume->user_id = Auth::user()->id;
         $resume->province_id = $request['province_id'];
-        $resume->novice = $request['novice'];
         $resume->referer = $request['our'];
         if ($request['our'] == 6 || $request['our'] == 4) {
             $this->validate($request, [
@@ -1284,30 +1287,84 @@ class resumeController extends Controller
     public function quick_view()
     {
         $id = request('apply_id');
+        $page_name = request('page_name');
         $applies = explode(',',request('applies_id'));
+        $applies_count = count($applies);
         $index = array_search($id , $applies,true);
-        if($index == 9)
+        if($index == $applies_count-1)
         {
             $next_index = -1;
-            $prev_index = 8;
-            $prev_apply_value = $applies[$prev_index];
+            if($applies_count > 1)
+            {
+                $prev_index = $applies_count - 2;
+                $prev_apply_value = $applies[$prev_index];
+            }
+
+        else
+                $prev_index = -1;
         }
         else if($index == 0)
         {
-            $next_index = 1;
-            $next_apply_value = $applies[$next_index];
-            $prev_index = -1;
+            if($applies_count > 0)
+            {
+                if($applies_count == 1)
+                {
+                    $next_index = -1;
+                    $prev_index = -1;
+                }
+                else
+                {
+                    $next_index = 1;
+                    $next_apply_value = $applies[$next_index];
+                    $prev_index = -1;
+                }
+            }
+            else{
+                $next_index = -1;
+                $prev_index = -1;
+            }
         }
-        else{
+        else
+        {
             $next_index = $index+1;
             $prev_index = $index-1;
             $next_apply_value = $applies[$next_index];
             $prev_apply_value = $applies[$prev_index];
         }
 
-        $apply = Apply::where('id',$id)->first();
-        $resume = $apply->user->resume;
-        $user = $resume->user;
+        if($page_name == 'apply_page')
+        {
+            $apply = Apply::where('id',$id)->first();
+            $resume = $apply->user->resume;
+        }
+        else if($page_name == 'user_page')
+        {
+           /* if($index == 9)
+            {
+                $next_index = -1;
+                $prev_index = 8;
+                $prev_apply_value = $applies[$prev_index];
+            }
+            else if($index == 0)
+            {
+                $next_index = 1;
+                $next_apply_value = $applies[$next_index];
+                $prev_index = -1;
+            }
+            else
+            {
+                $next_index = $index+1;
+                $prev_index = $index-1;
+                $next_apply_value = $applies[$next_index];
+                $prev_apply_value = $applies[$prev_index];
+            }*/
+            $user = User::where('id',$id)->first();
+            $apply = $user;
+            $resume = $user->resume;
+        }
+        $resume_viewed = $this->view_resume($resume->id);
+
+
         $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
         $user_khedmat_status = DB::table('khedmatmap')->where('site_id','=',$khedmat_status[0]->military_status)->get();
         $user_khedmat_moaf_status = DB::table('khedmatmoafmap')->where('id','=',$khedmat_status[0]->reason_exemption)->get();
@@ -1320,38 +1377,39 @@ class resumeController extends Controller
         $year = \p3ym4n\JDate\JDate::now()->year;// sample : 1397
         $years_old = $year - $age;
         return view('admin.quickView.resume_modal',compact(['resume','user_khedmat_status','user_khedmat_moaf_status','degrees_array','years_old','index'
-        ,'next_index','prev_index','prev_apply_value','next_apply_value'
+        ,'next_index','prev_index','prev_apply_value','next_apply_value','apply','page_name','resume_viewed'
         ]));
 
     }
 
-    public function show_resume()
+    public function show_resume($apply_id)
 
     {
-        $id = 75135;
-        $applies = explode(',',request('applies_id'));
-        $index = array_search($id , $applies,true);
-        if($index == 9)
+//todo add condition to check admin type and his company
+        $reject_reasons = RejectReasons::all();
+        $apply = Apply::where('id',$apply_id)->first();
+        if($apply)
         {
-            $next_index = -1;
-            $prev_index = 8;
-            $prev_apply_value = $applies[$prev_index];
+            $resume = $apply->user->resume;
+            $apply_exist = 1;
         }
-        else if($index == 0)
+        else
         {
-            $next_index = 1;
-            $next_apply_value = $applies[$next_index];
-            $prev_index = -1;
+            $apply =DB::table('applies')->where('id',$apply_id)->first();
+            $user = $apply->user_id;
+            $resume = Resume::where('user_id', $user)->first();
+            $apply_exist = 0;
         }
-        else{
-            $next_index = $index+1;
-            $prev_index = $index-1;
-            $next_apply_value = $applies[$next_index];
-            $prev_apply_value = $applies[$prev_index];
+        $status = $apply->status;
+        $company_flag = $apply->job->company->flag;
+        if($status == 1 || $status == 3)
+        {
+            $delete_button = 0;
         }
-
-        $apply = Apply::where('id',$id)->first();
-        $resume = $apply->user->resume;
+        else if($status !=1 && $company_flag == 1)
+        {
+            $delete_button = 1;
+        }
         $user = $resume->user;
         $khedmat_status = DB::table('user_profiles')->where('user_id','=',$user->id)->get();
         $user_khedmat_status = DB::table('khedmatmap')->where('site_id','=',$khedmat_status[0]->military_status)->get();
@@ -1364,9 +1422,84 @@ class resumeController extends Controller
         $age = substr($resume->user->profile->born_date, 0, 4); // sample : 1361
         $year = \p3ym4n\JDate\JDate::now()->year;// sample : 1397
         $years_old = $year - $age;
-        return view('admin.resumes.show_in_new_tab',compact(['resume','user_khedmat_status','user_khedmat_moaf_status','degrees_array','years_old','index'
-            ,'next_index','prev_index','prev_apply_value','next_apply_value'
+        return view('admin.resumes.show_in_new_tab',compact(['resume','user_khedmat_status','user_khedmat_moaf_status','degrees_array','years_old',
+            'apply_exist','apply','delete_button','reject_reasons','status'
         ]));
+
+    }
+
+    public function download_resume_group()
+    {
+       // mkdir(storage_path('temp_resume').'/'.Auth::user()->id);
+
+        //echo Storage::disk('resume')->get('cv/'.myFuncs::spilit_string(108738).'/resume.pdf');die( Storage::disk('resume').'/cv/');
+        $user_array =  session()->get('user_array');
+        $t = array();
+        foreach ($user_array as $user_ar){
+
+            $t[] = Storage::disk('resume')->getAdapter()->getPathPrefix().'cv/'.myFuncs::spilit_string($user_ar).'/resume.pdf';
+        }die(json_encode($t));
+        return response()->download($t);
+
+        /*    return response()->download($pathToFile)
+    die(json_encode(storage_path()));*/
+    }
+
+    public static function checked_resume($id)
+    {
+        // if exist record then this resume viewed (if view or change status)
+        $company_admin = DB::table('user_has_companies')->where('user_id',Auth::user()->id)->first()->company_id;
+        $company_other_admins = DB::table('user_has_companies')->where('company_id',$company_admin)->get();
+        $admins=[];
+        foreach ($company_other_admins as $company_other_admin)
+        {
+            $admins[] = $company_other_admin->user_id;
+        }
+        $checked_view_resume = DB::table('resume_viewer')->where('resume_id','=',$id)->wherein('admin_id',$admins)->first();
+        if(count($checked_view_resume) == 0)
+            $checked_view_resume=0;
+        return $checked_view_resume;
+    }
+
+    public function view_resume($id)
+    {
+
+        if(self::checked_resume($id) > 0)
+            $resume_viewed = 1;
+        else
+        {
+
+            $data = array('admin_id' => Auth::user()->id , "resume_id" => $id , "view"=>1);
+            DB::table('resume_viewer')->insert($data);
+            $resume_viewed = 1;
+
+        }
+
+        return $resume_viewed;
+    }
+
+    public static function change_status_resume($id)
+    {
+        //consider the viewer is admin or Specialized manager
+        //todo if status changed for resume its viewed or not? now it's viewed
+        $record_id = self::checked_resume($id);
+       // die(json_encode($record_id->change_status));
+        if($record_id > 0 && $record_id->admin_id == Auth::user()->id && $record_id->change_status == 0)
+        {
+            DB::table('resume_viewer')
+                ->where('id',$record_id->id)
+                ->update(['change_status' => 1]);
+        }
+        else if($record_id > 0 && $record_id->admin_id == Auth::user()->id && $record_id->change_status !== 0)
+        {
+
+        }
+        else if((!$record_id > 0 )||($record_id > 0 && $record_id->admin_id != Auth::user()->id && $record_id->change_status !== 0))
+        {
+            $data = array('admin_id' => Auth::user()->id , "resume_id" => $id , "change_status"=>1);
+            DB::table('resume_viewer')->insert($data);
+        }
+
 
     }
 
